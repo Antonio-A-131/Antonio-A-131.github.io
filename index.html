@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Which WWI Role Are You?</title>
+  <style>
+    body {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #f4f1ee;
+      color: #333;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    section {
+      max-width: 600px;
+      margin: auto;
+      margin-bottom: 2rem;
+    }
+
+    h1, h2 {
+      font-family: 'Courier New', Courier, monospace;
+      color: #4a2f22;
+    }
+
+    button, select, input {
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #8b5c4a;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #a6745e;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .question {
+      display: none;
+    }
+
+    #results {
+      display: none;
+      font-size: 1.2rem;
+    }
+
+    #height-feet, #height-inches, #weight, #age {
+      width: 200px; /* Adjust the width to make the fields wider */
+      padding: 10px;
+      margin: 5px 0;
+    }
+
+    #result-image {
+      margin-top: 20px;
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Start Screen -->
+  <section id="start-screen">
+    <h1>🍁Which WWI Role Are You?</h1>
+    <p>Start by entering your background info:</p>
+
+    <input type="number" id="height-feet" placeholder="Height (feet)" min="0" max="8" required>
+    <input type="number" id="height-inches" placeholder="Height (inches)" min="0" max="11" required><br>
+    <input type="number" id="weight" placeholder="Weight (lbs)" min="0" max="600" step="5" required><br>
+    <input type="number" id="age" placeholder="Age" min="0" max="100" required><br>
+
+    <select id="gender">
+      <option value="">Select Gender</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select><br>
+
+    <select id="race">
+      <option value="">Select Race/Ethnicity</option>
+      <option value="white">White</option>
+      <option value="black">Black</option>
+      <option value="asian">Asian</option>
+      <option value="indigenous">Indigenous</option>
+      <option value="other">Other</option>
+    </select><br>
+
+    <select id="year">
+      <option value="1914">1914</option>
+      <option value="1917">1917</option>
+    </select><br>
+
+    <button id="start-btn">Start Quiz</button>
+  </section>
+
+  <!-- Quiz Questions -->
+  <section id="quiz">
+    <div class="question" data-question="1">
+      <h2>What's your greatest strength?</h2>
+      <ul>
+        <li><button class="answer" data-result="soldier">Bravery under pressure</button></li>
+        <li><button class="answer" data-result="pilot">Quick decision making</button></li>
+        <li><button class="answer" data-result="nurse">Compassion and resilience</button></li>
+        <li><button class="answer" data-result="gunner">Physical strength and focus</button></li>
+      </ul>
+    </div>
+
+    <div class="question" data-question="2">
+      <h2>Pick your weapon of choice</h2>
+      <ul>
+        <li><button class="answer" data-result="soldier">Rifle</button></li>
+        <li><button class="answer" data-result="pilot">Biplane</button></li>
+        <li><button class="answer" data-result="nurse">Medical Kit</button></li>
+        <li><button class="answer" data-result="gunner">Machine Gun</button></li>
+      </ul>
+    </div>
+
+    <div class="question" data-question="3">
+      <h2>Where would you prefer to be during the war?</h2>
+      <ul>
+        <li><button class="answer" data-result="soldier">In the trenches</button></li>
+        <li><button class="answer" data-result="pilot">Above the clouds</button></li>
+        <li><button class="answer" data-result="nurse">Field hospital</button></li>
+        <li><button class="answer" data-result="gunner">On the battlefield with heavy artillery</button></li>
+      </ul>
+    </div>
+
+    <div class="question" data-question="4">
+      <h2>How would you describe your teeth?</h2>
+      <ul>
+        <li><button class="answer" data-result="perfect">Perfect</button></li>
+        <li><button class="answer" data-result="worn">A bit worn</button></li>
+        <li><button class="answer" data-result="manageable">Manageable</button></li>
+        <li><button class="answer" data-result="not_functional">Not functional</button></li>
+      </ul>
+    </div>
+
+    <div class="question" data-question="5">
+      <h2>How would you describe your eyesight?</h2>
+      <ul>
+        <li><button class="answer" data-result="eagle_eye">Eagle eye</button></li>
+        <li><button class="answer" data-result="average">Average</button></li>
+        <li><button class="answer" data-result="glasses">Good with glasses</button></li>
+        <li><button class="answer" data-result="cane">Where's my cane?</button></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Results Screen (hidden initially) -->
+  <section id="results" style="display: none;">
+    <h2>Your WWI Role Is:</h2>
+    <div id="result-text"></div>
+    <img id="result-image" src="" alt="Role image" style="display:none;">
+    <div id="result-year"></div>
+    <button id="restart-btn">Take Again</button>
+  </section>
+
+  <script>
+    const startBtn = document.getElementById("start-btn");
+    const restartBtn = document.getElementById("restart-btn");
+
+    const startScreen = document.getElementById("start-screen");
+    const quizSection = document.getElementById("quiz");
+    const resultsSection = document.getElementById("results");
+
+    const questions = document.querySelectorAll(".question");
+    let currentQuestion = 0;
+    let answerTally = {
+      soldier: 0,
+      pilot: 0,
+      nurse: 0,
+      gunner: 0
+    };
+
+    let backgroundInfo = {};
+
+    startBtn.onclick = () => {
+      const feet = parseInt(document.getElementById("height-feet").value);
+      const inches = parseInt(document.getElementById("height-inches").value);
+      const weight = parseInt(document.getElementById("weight").value);
+      const age = parseInt(document.getElementById("age").value);
+      const gender = document.getElementById("gender").value;
+      const race = document.getElementById("race").value;
+      const year = parseInt(document.getElementById("year").value);
+
+      // Validate input ranges
+      if (isNaN(feet) || feet < 3 || feet > 8) {
+        alert("Please enter a valid height (feet) between 3 and 8.");
+        return;
+      }
+      if (isNaN(inches) || inches < 0 || inches > 11) {
+        alert("Please enter a valid height (inches) between 0 and 11.");
+        return;
+      }
+      if (isNaN(weight) || weight < 20 || weight > 600) {
+        alert("Please enter a valid weight between 20 and 600 lbs.");
+        return;
+      }
+      if (isNaN(age) || age < 0 || age > 100) {
+        alert("Please enter a valid age.");
+        return;
+      }
+      if (!gender || !race) {
+        alert("Please select gender and race.");
+        return;
+      }
+
+      const totalHeightInInches = feet * 12 + inches;
+
+      backgroundInfo = { feet, inches, weight, age, gender, race, year, heightInches: totalHeightInInches };
+
+      startScreen.style.display = "none";
+      quizSection.style.display = "block";
+      showQuestion(currentQuestion);
+    };
+
+    restartBtn.onclick = () => {
+      location.reload();
+    };
+
+    function showQuestion(index) {
+      questions[index].style.display = "block";
+    }
+
+    const answers = document.querySelectorAll(".answer");
+    answers.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const role = btn.dataset.result;
+        answerTally[role]++;
+        disableAnswers(btn.closest("ul"));
+
+        if (currentQuestion === questions.length - 1) {
+          quizSection.style.display = "none";
+          showResults();
+        } else {
+          questions[currentQuestion].style.display = "none";
+          currentQuestion++;
+          showQuestion(currentQuestion);
+        }
+      });
+    });
+
+    function disableAnswers(list) {
+      list.querySelectorAll("button").forEach(btn => {
+        btn.disabled = true;
+      });
+    }
+
+    function playSound(sound) {
+      const sounds = {
+        soldier: new Audio('sounds/soldiers.mp4'),
+        youngsoldier: new Audio('sounds/youngsoldiers.mp4'),
+        pilot: new Audio('sounds/ace.mp4'),
+        nurse: new Audio('sounds/nurse.mp3'),
+        medic: new Audio('sounds/nurse.mp3'),        
+        gunner: new Audio('sounds/gunner.mp3'),
+        sniper: new Audio('sounds/sniper.mp4'),
+        rejected: new Audio('sounds/rejected.mp4'),
+        construction: new Audio('sounds/construction.mp3'),
+        other_rejected: new Audio('sounds/rejected.mp4')
+      };
+
+      if (sounds[sound]) {
+        sounds[sound].play();
+      }
+    }
+
+    function showResults() {
+      resultsSection.style.display = "block";
+
+      const resultText = document.getElementById("result-text");
+      const resultImage = document.getElementById("result-image");
+
+      const setResult = (text, roleKey = null) => {
+        resultText.innerText = text;
+        if (roleKey) {
+          resultImage.src = `images/${roleKey}.jpg`;
+          resultImage.style.display = "block";
+        } else {
+          resultImage.style.display = "none";
+        }
+      };
+
+      const { feet, inches, weight, gender, race, year, heightInches, age } = backgroundInfo;
+
+      if (age >= 14 && age <= 17) {
+        const roll = Math.random();
+        if (roll < 0.3) {
+          setResult("🚫 Come back tomorrow when you're 18!");
+          playSound('rejected');
+          return;
+        } else if (roll < 0.7) {
+          setResult("🪖 Soldier – Despite being young, you managed to lie your way in!", "youngsoldier");
+          playSound('youngsoldier');
+          return;
+        } else {
+          setResult("❌ Denied – You're too young for service at this time.");
+          playSound('rejected');
+          return;
+        }
+      }
+
+      if (year === 1917) {
+        if (heightInches < 59 || weight < 110) {
+          setResult("⚠️ Looser Standards: You might have been able to serve, despite being slightly below the normal requirements.");
+          playSound('rejected');
+        } else {
+          setResult("You would have had a chance to serve, with slightly looser standards in 1917!", "soldier");
+          playSound('soldier');
+        }
+      } else {
+        if (heightInches < 60 || weight < 110) {
+          setResult("❌ Rejected – Your height and weight would not have passed enlistment standards.");
+          playSound('rejected');
+          return;
+        }
+      }
+
+      if (race !== "white" && race !== "indigenous") {
+        const roll = Math.random();
+        if (year === 1914) {
+          if (roll < 0.6) {
+            setResult("❌ Rejected – In 1914, racial discrimination was especially severe, and you would likely have been turned away.");
+            playSound('rejected');
+            return;
+          } else if (roll < 0.85) {
+            setResult("🛠️ Construction Battalion – You may have served in a segregated labor or pioneer unit.", "construction");
+            playSound('construction');
+            return;
+          } else {
+            setResult("🪖 Trench Soldier – You managed to enlist and serve in a combat role.", "soldier");
+            playSound('soldier');
+            return;
+          }
+        } else {
+          if (roll < 0.4) {
+            setResult("🪖 Trench Soldier – Despite systemic barriers, you'd have been sent to the front lines as part of a minority regiment.", "soldier");
+            playSound('soldier');
+            return;
+          } else if (roll < 0.8) {
+            setResult("🛠️ Construction Battalion – You would likely have been placed in a labor corps or pioneer unit.", "construction");
+            playSound('construction');
+            return;
+          } else {
+            setResult("❌ Rejected – Many volunteers of color were still turned away in 1917.");
+            playSound('rejected');
+            return;
+          }
+        }
+      }
+
+      if (gender === "female") {
+        setResult("⛑️ Field Nurse – As a woman during WWI, you’d likely serve as a compassionate, brave nurse.", "nurse");
+        playSound('nurse');
+        return;
+      }
+
+      if (heightInches >= 67) {
+        answerTally.gunner++;
+        setResult("🔫 Gunner – Strong and focused, you're ready for the frontlines.", "gunner");
+        playSound('gunner');
+        return;
+      }
+
+      const topResult = Object.entries(answerTally).sort((a, b) => b[1] - a[1])[0][0];
+
+      const roles = {
+        soldier: "🪖 Trench Soldier – You're courageous, gritty, and always on the front lines.",
+        pilot: "✈️ Ace Pilot – You're daring, sharp, and born to fly.",
+        medic: "⛑️ Medic – You're compassionate, resilient, and a hero in your own right.",
+        gunner: "🔫 Gunner – You're strong, focused, and essential on the battlefield.",
+        sniper: "🎯 Sniper – You're calm, precise, and deadly, with an unparalleled eye for your target."
+      };
+
+      setResult(roles[topResult], topResult);
+      playSound(topResult);
+    }
+  </script>
+
+</body>
+</html>
